@@ -46,10 +46,10 @@ export default function GraficoPage() {
 
   const backtests = runs.flatMap((r) =>
     r.strategies
-      .filter((s) => s.name === "BreakoutTrend")
+      .filter((s) => s.name !== "BuyAndHold")
       .map((s) => ({
         key: `${r.id}:${s.name}`,
-        label: `Backtest ${r.start.slice(0, 10)} → ${r.end.slice(0, 10)} · fee ${s.fee != null ? pct(s.fee) : "?"}`,
+        label: `${s.name} · backtest ${r.start.slice(0, 10)} → ${r.end.slice(0, 10)} · fee ${s.fee != null ? pct(s.fee) : "?"}`,
         trades: s.trades.map((t) => ({ ...t, is_open: false })),
       })),
   );

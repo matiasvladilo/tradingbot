@@ -26,7 +26,15 @@ type StrategyRun = {
 };
 type Run = { id: string; start: string; end: string; timerange: string | null; strategies: StrategyRun[] };
 
-const COLORS: Record<string, string> = { BreakoutTrend: "#a371f7", BuyAndHold: "#d29922" };
+const COLORS: Record<string, string> = {
+  BreakoutTrend: "#a371f7",
+  BreakoutTrendV2: "#58a6ff",
+  V2Breakeven: "#79c0ff",
+  V2Filtro: "#f778ba",
+  V2Regimen: "#56d4dd",
+  TrendDaily: "#3fb950",
+  BuyAndHold: "#d29922",
+};
 const color = (name: string) => COLORS[name] ?? "#58a6ff";
 
 const axis = { stroke: "#8b96a5", fontSize: 11 };

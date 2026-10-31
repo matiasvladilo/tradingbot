@@ -13,20 +13,8 @@ from pandas import DataFrame
 from freqtrade.persistence import Trade
 from freqtrade.strategy import IStrategy, informative, stoploss_from_absolute
 
+from lib.indicators import atr, ema
 from lib.sizing import RiskPolicy, daily_loss_breached, risk_stake
-
-
-def ema(series: pd.Series, span: int) -> pd.Series:
-    return series.ewm(span=span, adjust=False).mean()
-
-
-def atr(df: DataFrame, period: int = 14) -> pd.Series:
-    prev_close = df["close"].shift(1)
-    tr = pd.concat(
-        [df["high"] - df["low"], (df["high"] - prev_close).abs(), (df["low"] - prev_close).abs()],
-        axis=1,
-    ).max(axis=1)
-    return tr.ewm(alpha=1 / period, adjust=False).mean()
 
 
 class BreakoutTrend(IStrategy):
