@@ -11,6 +11,7 @@ const LINKS = [
   { href: "/grafico", label: "Gráfico" },
   { href: "/simulacion", label: "Simulación" },
   { href: "/robustez", label: "Robustez" },
+  { href: "/riesgo", label: "Riesgo" },
   { href: "/historial", label: "Historial" },
   { href: "/controles", label: "Controles" },
 ];

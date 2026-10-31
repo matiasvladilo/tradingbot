@@ -44,3 +44,12 @@ Actualizar datos: `freqtrade download-data --userdir freqtrade/user_data --confi
 .\.venv\Scripts\python scripts\monte_carlo.py <backtest-result-...zip> TrendDaily [<zip> <estrategia> ...]
 ```
 Actualiza la página Robustez del dashboard.
+
+## Riesgo vs. ganancia
+
+```powershell
+.\.venv\Scripts\freqtrade backtesting --userdir freqtrade/user_data --config freqtrade/user_data/config.base.json --export trades `
+  --timeframe 1d --timeframe-detail 1h --timerange 20200101- --fee 0.001 `
+  --strategy-list TrendDaily_R0025 TrendDaily_R0050 TrendDaily_R0100 TrendDaily_R0200 DualMomentum_R0025 DualMomentum_R0050 DualMomentum_R0100 DualMomentum_R0200 BuyAndHold
+.\.venv\Scripts\python scripts\risk_scenarios.py <backtest-result-...zip>   # actualiza la página Riesgo
+```
