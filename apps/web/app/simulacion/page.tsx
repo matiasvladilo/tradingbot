@@ -33,7 +33,11 @@ const COLORS: Record<string, string> = {
   V2Filtro: "#f778ba",
   V2Regimen: "#56d4dd",
   TrendDaily: "#3fb950",
+  MomentumVotes: "#e3b341",
+  DualMomentum: "#ff7b72",
+  RSI2Reversion: "#bc8cff",
   BuyAndHold: "#d29922",
+  BuyAndHold40: "#8b96a5",
 };
 const color = (name: string) => COLORS[name] ?? "#58a6ff";
 

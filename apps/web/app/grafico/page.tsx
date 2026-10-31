@@ -18,6 +18,8 @@ import { useBot } from "@/lib/bot-context";
 
 const PAIRS = ["BTC/USDT", "ETH/USDT"];
 const LIVE = "live";
+// Estrategias de velas diarias: sus backtests se muestran con el bot diario
+const DAILY = new Set(["TrendDaily", "MomentumVotes", "DualMomentum", "RSI2Reversion"]);
 
 type BacktestRun = {
   id: string;
@@ -56,7 +58,7 @@ export default function GraficoPage() {
 
   const backtests = runs.flatMap((r) =>
     r.strategies
-      .filter((s) => (bot.strategy === "TrendDaily" ? s.name === "TrendDaily" : s.name !== "TrendDaily" && s.name !== "BuyAndHold"))
+      .filter((s) => !s.name.startsWith("BuyAndHold") && DAILY.has(s.name) === (bot.timeframe === "1d"))
       .map((s) => ({
         key: `${r.id}:${s.name}`,
         label: `${s.name} · backtest ${r.start.slice(0, 10)} → ${r.end.slice(0, 10)} · fee ${s.fee != null ? pct(s.fee) : "?"}`,
