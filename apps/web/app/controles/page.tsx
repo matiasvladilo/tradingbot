@@ -1,19 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import { useBot } from "@/lib/bot-context";
 import { Locks, ShowConfig, ftAction, usePoll } from "@/lib/ft";
 
-const LIMITS = [
-  ["Riesgo por operación", "0,25% del patrimonio hasta el stop"],
-  ["Máximo por activo", "20% del patrimonio"],
-  ["Exposición total", "40% (2 posiciones × 20%)"],
-  ["Pérdida diaria (UTC)", "1% → se bloquean nuevas entradas"],
-  ["StoplossGuard", "3 stops en 24 h → pausa 12 h"],
-  ["MaxDrawdown", "5% en 7 días → pausa 24 h"],
-  ["Plazo máximo", "72 h por posición"],
-];
-
 export default function ControlesPage() {
+  const { bot } = useBot();
   const cfg = usePoll<ShowConfig>("show_config", 5_000);
   const locks = usePoll<Locks>("locks", 15_000);
   const [msg, setMsg] = useState<string | null>(null);
@@ -23,7 +15,7 @@ export default function ControlesPage() {
     if (confirmText && !window.confirm(confirmText)) return;
     setBusy(true);
     try {
-      const res = (await ftAction(path, body)) as { status?: string; result?: string };
+      const res = (await ftAction(bot.id, path, body)) as { status?: string; result?: string };
       setMsg(res.status ?? res.result ?? "Hecho");
       cfg.reload();
     } catch (e) {
@@ -38,7 +30,7 @@ export default function ControlesPage() {
 
   return (
     <>
-      <h1>Controles</h1>
+      <h1>Controles · {bot.label}</h1>
       <div className="grid two">
         <div className="card">
           <h2>Acciones</h2>
@@ -71,10 +63,10 @@ export default function ControlesPage() {
         </div>
 
         <div className="card">
-          <h2>Límites de riesgo (estrategia v1)</h2>
+          <h2>Límites de riesgo · {bot.strategy}</h2>
           <table>
             <tbody>
-              {LIMITS.map(([k, v]) => (
+              {bot.limits.map(([k, v]) => (
                 <tr key={k}>
                   <td>{k}</td>
                   <td className="muted">{v}</td>

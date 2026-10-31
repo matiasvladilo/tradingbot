@@ -6,8 +6,9 @@ claves de exchange ni configuración real; `scripts/check_configs.py` lo impide.
 ## Uso diario (Windows, sin Docker)
 
 ```powershell
-# simulación en vivo (dry-run), API en 127.0.0.1:8080
-powershell -ExecutionPolicy Bypass -File scripts\sim.ps1
+# simulaciones en vivo (dry-run), cada una en su propia terminal
+powershell -ExecutionPolicy Bypass -File scripts\sim.ps1 -Bot daily      # TrendDaily, API 127.0.0.1:8081
+powershell -ExecutionPolicy Bypass -File scripts\sim.ps1                 # BreakoutTrend v1, API 127.0.0.1:8080
 
 # dashboard en http://localhost:3000
 npm --prefix apps/web run dev

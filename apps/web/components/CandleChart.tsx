@@ -34,7 +34,6 @@ function line(times: UTCTimestamp[], values: (number | null)[]) {
   return times.flatMap((time, i) => (values[i] == null ? [] : [{ time, value: values[i] as number }]));
 }
 
-const toBar = (ms: number) => (Math.floor(ms / 1000 / HOUR) * HOUR) as UTCTimestamp;
 const sign = (v: number) => (v >= 0 ? "+" : "");
 
 type Props = {
@@ -42,11 +41,13 @@ type Props = {
   trades: ChartTrade[];
   showSignals: boolean;
   focusId: number | null;
+  barSeconds?: number;
 };
 
-export default function CandleChart({ candles, trades, showSignals, focusId }: Props) {
+export default function CandleChart({ candles, trades, showSignals, focusId, barSeconds = HOUR }: Props) {
   const ref = useRef<HTMLDivElement>(null);
   const chartRef = useRef<IChartApi | null>(null);
+  const toBar = (ms: number) => (Math.floor(ms / 1000 / barSeconds) * barSeconds) as UTCTimestamp;
 
   useEffect(() => {
     if (!ref.current) return;
@@ -82,6 +83,7 @@ export default function CandleChart({ candles, trades, showSignals, focusId }: P
     );
 
     const overlay = (name: string, title: string, color: string, style = LineStyle.Solid, width: 1 | 2 = 1) => {
+      if (!candles.columns.includes(name)) return;
       const s = chart.addSeries(LineSeries, {
         color,
         lineWidth: width,
@@ -95,7 +97,9 @@ export default function CandleChart({ candles, trades, showSignals, focusId }: P
     };
     overlay("ema50_4h", "EMA50 4h", "#58a6ff66", LineStyle.Solid, 2);
     overlay("ema200_4h", "EMA200 4h", "#d2992266", LineStyle.Solid, 2);
-    overlay("breakout_level", "ruptura", "#8b96a555", LineStyle.Dotted);
+    overlay("sma200", "SMA200", "#d2992299", LineStyle.Solid, 2);
+    overlay("breakout_level", "ruptura", "#8b96a577", LineStyle.Dotted);
+    overlay("exit_level", "salida", "#f8514955", LineStyle.Dotted);
 
     const vol = chart.addSeries(HistogramSeries, { priceFormat: { type: "volume" }, title: "volumen" }, 1);
     vol.setData(
@@ -105,7 +109,7 @@ export default function CandleChart({ candles, trades, showSignals, focusId }: P
         color: (close[i] ?? 0) >= (open[i] ?? 0) ? "#3fb95066" : "#f8514966",
       })),
     );
-    const atr = chart.addSeries(LineSeries, { color: "#a371f7", lineWidth: 1, title: "ATR 14" }, 2);
+    const atr = chart.addSeries(LineSeries, { color: "#a371f7", lineWidth: 1, title: "ATR" }, 2);
     atr.setData(line(times, column(candles, "atr")));
 
     const panes = chart.panes();
@@ -169,20 +173,20 @@ export default function CandleChart({ candles, trades, showSignals, focusId }: P
       chartRef.current = null;
       chart.remove();
     };
-  }, [candles, trades, showSignals]);
+  }, [candles, trades, showSignals, barSeconds]);
 
   useEffect(() => {
     const t = trades.find((x) => x.trade_id === focusId);
     const chart = chartRef.current;
     if (!t || !chart) return;
-    const from = toBar(t.open_timestamp) - 24 * HOUR;
-    const to = (t.close_timestamp ? toBar(t.close_timestamp) : toBar(Date.now())) + 24 * HOUR;
+    const from = toBar(t.open_timestamp) - 24 * barSeconds;
+    const to = (t.close_timestamp ? toBar(t.close_timestamp) : toBar(Date.now())) + 24 * barSeconds;
     try {
       chart.timeScale().setVisibleRange({ from: from as UTCTimestamp, to: to as UTCTimestamp });
     } catch {
       // la operación cae fuera de las velas cargadas
     }
-  }, [focusId, trades]);
+  }, [focusId, trades, barSeconds]);
 
   return <div ref={ref} className="chart-box" />;
 }

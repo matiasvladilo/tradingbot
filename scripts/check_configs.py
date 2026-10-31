@@ -49,9 +49,9 @@ def check_dir(directory: Path) -> list[str]:
         if "live" in path.name.lower():
             errors.append(f"{path.name}: el modo real no está habilitado en este incremento")
         errors.extend(check_config(path))
-    sim = directory / "config.sim.json"
-    if sim.exists() and json.loads(sim.read_text(encoding="utf-8")).get("dry_run") is not True:
-        errors.append("config.sim.json: debe declarar dry_run: true")
+    for sim in directory.glob("config.sim*.json"):
+        if json.loads(sim.read_text(encoding="utf-8")).get("dry_run") is not True:
+            errors.append(f"{sim.name}: debe declarar dry_run: true")
     return errors
 
 

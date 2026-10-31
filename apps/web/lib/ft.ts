@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { useBot } from "@/lib/bot-context";
 
 export type Trade = {
   trade_id: number;
@@ -111,14 +112,14 @@ export function duration(fromMs: number, toMs: number) {
 export const fmtTime = (ms: number) =>
   new Date(ms).toLocaleString("es-CL", { dateStyle: "short", timeStyle: "short" });
 
-export async function ftGet<T>(path: string): Promise<T> {
-  const res = await fetch(`/api/ft/${path}`, { cache: "no-store" });
+export async function ftGet<T>(bot: string, path: string): Promise<T> {
+  const res = await fetch(`/api/ft/${bot}/${path}`, { cache: "no-store" });
   if (!res.ok) throw new Error(`${path}: ${res.status}`);
   return res.json();
 }
 
-export async function ftAction(path: string, body?: unknown): Promise<unknown> {
-  const res = await fetch(`/api/ft/${path}`, {
+export async function ftAction(bot: string, path: string, body?: unknown): Promise<unknown> {
+  const res = await fetch(`/api/ft/${bot}/${path}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: body ? JSON.stringify(body) : undefined,
@@ -127,20 +128,26 @@ export async function ftAction(path: string, body?: unknown): Promise<unknown> {
   return res.json();
 }
 
-/** Consulta una ruta de la API y la refresca cada `intervalMs`. */
+/** Consulta una ruta de la API del bot seleccionado y la refresca cada `intervalMs`. */
 export function usePoll<T>(path: string | null, intervalMs = 10_000) {
+  const { bot } = useBot();
   const [data, setData] = useState<T | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     if (!path) return;
     try {
-      setData(await ftGet<T>(path));
+      setData(await ftGet<T>(bot.id, path));
       setError(null);
     } catch (e) {
       setError(String(e));
     }
-  }, [path]);
+  }, [bot.id, path]);
+
+  useEffect(() => {
+    setData(null);
+    setError(null);
+  }, [bot.id]);
 
   useEffect(() => {
     load();

@@ -14,6 +14,7 @@ import {
   usd,
   usePoll,
 } from "@/lib/ft";
+import { useBot } from "@/lib/bot-context";
 
 const PAIRS = ["BTC/USDT", "ETH/USDT"];
 const LIVE = "live";
@@ -33,8 +34,17 @@ export default function GraficoPage() {
   const [showSignals, setShowSignals] = useState(true);
   const [focusId, setFocusId] = useState<number | null>(null);
   const [runs, setRuns] = useState<BacktestRun[]>([]);
+  const { bot } = useBot();
 
-  const candles = usePoll<Candles>(`pair_candles?pair=${encodeURIComponent(pair)}&timeframe=1h&limit=1000`, 60_000);
+  useEffect(() => {
+    setSource(LIVE);
+    setFocusId(null);
+  }, [bot.id]);
+
+  const candles = usePoll<Candles>(
+    `pair_candles?pair=${encodeURIComponent(pair)}&timeframe=${bot.timeframe}&limit=${bot.candleLimit}`,
+    60_000,
+  );
   const closed = usePoll<{ trades: Trade[] }>("trades?limit=500", 30_000);
   const open = usePoll<Trade[]>("status", 15_000);
 
@@ -46,7 +56,7 @@ export default function GraficoPage() {
 
   const backtests = runs.flatMap((r) =>
     r.strategies
-      .filter((s) => s.name !== "BuyAndHold")
+      .filter((s) => (bot.strategy === "TrendDaily" ? s.name === "TrendDaily" : s.name !== "TrendDaily" && s.name !== "BuyAndHold"))
       .map((s) => ({
         key: `${r.id}:${s.name}`,
         label: `${s.name} · backtest ${r.start.slice(0, 10)} → ${r.end.slice(0, 10)} · fee ${s.fee != null ? pct(s.fee) : "?"}`,
@@ -58,14 +68,14 @@ export default function GraficoPage() {
   const allTrades: ChartTrade[] = useMemo(() => {
     if (source === LIVE) return [...(closed.data?.trades ?? []), ...(open.data ?? [])].map(toChart);
     return backtests.find((b) => b.key === source)?.trades ?? [];
-  }, [source, liveKey, runs]);
+  }, [source, liveKey, runs, bot.strategy]);
 
   const range = useMemo(() => {
     const i = candles.data?.columns.indexOf("__date_ts") ?? -1;
     const rows = candles.data?.data ?? [];
     if (i < 0 || !rows.length) return null;
-    return { from: rows[0][i] as number, to: (rows[rows.length - 1][i] as number) + 3_600_000 };
-  }, [candles.data]);
+    return { from: rows[0][i] as number, to: (rows[rows.length - 1][i] as number) + bot.barSeconds * 1000 };
+  }, [candles.data, bot.barSeconds]);
 
   const trades = useMemo(
     () =>
@@ -80,7 +90,7 @@ export default function GraficoPage() {
   return (
     <>
       <div className="row" style={{ marginBottom: 12 }}>
-        <h1 style={{ margin: 0 }}>Gráfico 1h</h1>
+        <h1 style={{ margin: 0 }}>Gráfico {bot.timeframe} · {bot.strategy}</h1>
         <select value={pair} onChange={(e) => (setPair(e.target.value), setFocusId(null))}>
           {PAIRS.map((p) => (
             <option key={p}>{p}</option>
@@ -106,13 +116,19 @@ export default function GraficoPage() {
         con ganancia / pérdida ·
         la línea une entrada y salida · línea punteada = posición aún abierta (con su stop) ·{" "}
         <span style={{ color: "#a371f7" }}>● señal</span> = la regla se cumplió; no siempre hay compra (límites de
-        riesgo, posición ya abierta, bot detenido o señal anterior al inicio del bot).
+        riesgo, posición ya abierta, bot detenido o señal anterior al inicio del bot). {bot.factors}
       </p>
 
       {candles.error && <p className="error">{candles.error}</p>}
       <div className="card">
         {candles.data ? (
-          <CandleChart candles={candles.data} trades={trades} showSignals={showSignals} focusId={focusId} />
+          <CandleChart
+            candles={candles.data}
+            trades={trades}
+            showSignals={showSignals}
+            focusId={focusId}
+            barSeconds={bot.barSeconds}
+          />
         ) : (
           <p className="muted">Cargando…</p>
         )}

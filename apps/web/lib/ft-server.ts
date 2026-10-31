@@ -2,7 +2,12 @@ import "server-only";
 
 // Cliente de la API REST de Freqtrade. Solo corre en el servidor: las credenciales
 // nunca llegan al navegador.
-const BASE = process.env.FT_API_URL ?? "http://127.0.0.1:8080";
+const BOT_URLS: Record<string, string> = {
+  breakout: process.env.FT_API_URL ?? "http://127.0.0.1:8080",
+  daily: process.env.FT_API_URL_DAILY ?? "http://127.0.0.1:8081",
+};
+
+export const isBot = (id: string) => id in BOT_URLS;
 
 function authHeader(): string {
   const user = process.env.FT_API_USERNAME ?? "";
@@ -29,8 +34,8 @@ export const READ_PATHS = new Set([
 // Acciones permitidas desde la UI. No incluye forceentry: el panel no abre posiciones.
 export const ACTION_PATHS = new Set(["stopentry", "start", "forceexit"]);
 
-export async function ftFetch(path: string, init: RequestInit = {}, search = ""): Promise<Response> {
-  return fetch(`${BASE}/api/v1/${path}${search}`, {
+export async function ftFetch(bot: string, path: string, init: RequestInit = {}, search = ""): Promise<Response> {
+  return fetch(`${BOT_URLS[bot]}/api/v1/${path}${search}`, {
     ...init,
     headers: { Authorization: authHeader(), "Content-Type": "application/json", ...init.headers },
     cache: "no-store",
