@@ -13,3 +13,4 @@ apps/web/node_modules/
 apps/web/.next/
 apps/web/.env.local
 apps/web/data/
+apps/web/*.tsbuildinfo
