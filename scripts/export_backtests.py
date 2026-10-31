@@ -69,6 +69,21 @@ def summarize(path: Path) -> dict:
                     "metrics": metrics,
                     "fee": trades[0]["fee_open"] if trades else None,
                     "equity": curve,
+                    "trades": [
+                        {
+                            "trade_id": i + 1,
+                            "pair": t["pair"],
+                            "open_timestamp": t["open_timestamp"],
+                            "close_timestamp": t["close_timestamp"],
+                            "open_rate": t["open_rate"],
+                            "close_rate": t["close_rate"],
+                            "stake_amount": t["stake_amount"],
+                            "profit_abs": t["profit_abs"],
+                            "profit_ratio": t["profit_ratio"],
+                            "exit_reason": t["exit_reason"],
+                        }
+                        for i, t in enumerate(trades)
+                    ],
                     "exit_reasons": [
                         {"reason": r["key"], "trades": r["trades"], "profit_abs": r["profit_total_abs"]}
                         for r in s.get("exit_reason_summary", [])

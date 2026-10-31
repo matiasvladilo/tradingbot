@@ -72,6 +72,45 @@ export type Locks = {
   locks: { pair: string; lock_end_time: string; reason: string; active: boolean }[];
 };
 
+/** Operación mínima para dibujar en el gráfico; sirve para paper en vivo y para backtests. */
+export type ChartTrade = {
+  trade_id: number;
+  pair: string;
+  is_open: boolean;
+  open_timestamp: number;
+  close_timestamp: number | null;
+  open_rate: number;
+  close_rate: number | null;
+  current_rate?: number;
+  stake_amount: number;
+  profit_abs: number;
+  profit_ratio: number;
+  stop_loss_abs?: number | null;
+  exit_reason: string | null;
+};
+
+const EXIT_REASONS: Record<string, string> = {
+  trailing_stop_loss: "stop móvil",
+  stop_loss: "stop",
+  stoploss_on_exchange: "stop",
+  max_hold: "plazo máximo",
+  trend_invalidated: "tendencia perdida",
+  force_exit: "cierre forzado",
+  exit_signal: "señal de salida",
+  roi: "objetivo",
+};
+
+export const exitLabel = (reason: string | null | undefined) =>
+  reason ? (EXIT_REASONS[reason] ?? reason) : "abierta";
+
+export function duration(fromMs: number, toMs: number) {
+  const h = Math.round((toMs - fromMs) / 3_600_000);
+  return h < 24 ? `${h} h` : `${Math.floor(h / 24)} d ${h % 24} h`;
+}
+
+export const fmtTime = (ms: number) =>
+  new Date(ms).toLocaleString("es-CL", { dateStyle: "short", timeStyle: "short" });
+
 export async function ftGet<T>(path: string): Promise<T> {
   const res = await fetch(`/api/ft/${path}`, { cache: "no-store" });
   if (!res.ok) throw new Error(`${path}: ${res.status}`);
