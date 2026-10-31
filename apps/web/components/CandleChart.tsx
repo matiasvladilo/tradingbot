@@ -98,6 +98,9 @@ export default function CandleChart({ candles, trades, showSignals, focusId, bar
     overlay("ema50_4h", "EMA50 4h", "#58a6ff66", LineStyle.Solid, 2);
     overlay("ema200_4h", "EMA200 4h", "#d2992266", LineStyle.Solid, 2);
     overlay("sma200", "SMA200", "#d2992299", LineStyle.Solid, 2);
+    overlay("ema20", "EMA20", "#58a6ffaa", LineStyle.Solid, 1);
+    overlay("ema50", "EMA50", "#d29922aa", LineStyle.Solid, 1);
+    overlay("vwap", "VWAP", "#e6edf3aa", LineStyle.Dashed, 1);
     overlay("breakout_level", "ruptura", "#8b96a577", LineStyle.Dotted);
     overlay("exit_level", "salida", "#f8514955", LineStyle.Dotted);
 
@@ -163,6 +166,8 @@ export default function CandleChart({ candles, trades, showSignals, focusId, bar
         price.createPriceLine({ price: t.open_rate, color: ENTRY, lineStyle: LineStyle.Dashed, lineWidth: 1, title: `Entrada #${t.trade_id}` });
         if (t.stop_loss_abs)
           price.createPriceLine({ price: t.stop_loss_abs, color: LOSS, lineStyle: LineStyle.Dashed, lineWidth: 1, title: `Stop #${t.trade_id}` });
+        if (t.target)
+          price.createPriceLine({ price: t.target, color: WIN, lineStyle: LineStyle.Dashed, lineWidth: 1, title: `Objetivo #${t.trade_id}` });
       }
     }
     markers.sort((a, b) => (a.time as number) - (b.time as number));

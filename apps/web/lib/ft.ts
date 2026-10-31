@@ -87,6 +87,7 @@ export type ChartTrade = {
   profit_abs: number;
   profit_ratio: number;
   stop_loss_abs?: number | null;
+  target?: number | null;
   exit_reason: string | null;
 };
 
@@ -96,9 +97,10 @@ const EXIT_REASONS: Record<string, string> = {
   stoploss_on_exchange: "stop",
   max_hold: "plazo máximo",
   trend_invalidated: "tendencia perdida",
-  force_exit: "cierre forzado",
+  force_exit: "cierre manual",
   exit_signal: "señal de salida",
   roi: "objetivo",
+  target: "objetivo",
 };
 
 export const exitLabel = (reason: string | null | undefined) =>
@@ -128,9 +130,10 @@ export async function ftAction(bot: string, path: string, body?: unknown): Promi
   return res.json();
 }
 
-/** Consulta una ruta de la API del bot seleccionado y la refresca cada `intervalMs`. */
-export function usePoll<T>(path: string | null, intervalMs = 10_000) {
-  const { bot } = useBot();
+/** Consulta una ruta de la API del bot seleccionado (o de `botId`) y la refresca cada `intervalMs`. */
+export function usePoll<T>(path: string | null, intervalMs = 10_000, botId?: string) {
+  const selected = useBot().bot;
+  const bot = botId ? { id: botId } : selected;
   const [data, setData] = useState<T | null>(null);
   const [error, setError] = useState<string | null>(null);
 

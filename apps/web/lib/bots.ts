@@ -64,6 +64,22 @@ export const BOTS: Bot[] = [
       ["Plazo máximo", "72 h por posición"],
     ],
   },
+  {
+    id: "manual",
+    label: "Práctica manual · 5m",
+    strategy: "ManualPractice",
+    timeframe: "5m",
+    barSeconds: 300,
+    candleLimit: 300,
+    factors: "Factores: EMA20/EMA50 (tendencia corta), VWAP del día, volumen y ATR. Las entradas las decides tú en la página Práctica.",
+    limits: [
+      ["Riesgo por operación", "máximo 2% del patrimonio hasta el stop"],
+      ["Tamaño de posición", "máximo 50% del patrimonio"],
+      ["Operaciones por día", "máximo 6"],
+      ["Pérdida diaria (UTC)", "3% → se acaba la sesión"],
+      ["Stop", "obligatorio, lo defines antes de entrar"],
+    ],
+  },
 ];
 
 export const DEFAULT_BOT = BOTS[0].id;

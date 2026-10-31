@@ -7,6 +7,7 @@ import { BOTS } from "@/lib/bots";
 
 const LINKS = [
   { href: "/", label: "Resumen" },
+  { href: "/practica", label: "Práctica" },
   { href: "/grafico", label: "Gráfico" },
   { href: "/simulacion", label: "Simulación" },
   { href: "/robustez", label: "Robustez" },

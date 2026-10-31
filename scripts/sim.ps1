@@ -3,7 +3,8 @@
 #   scripts\sim.ps1                → BreakoutTrend en 1h, API 127.0.0.1:8080
 #   scripts\sim.ps1 -Bot daily     → TrendDaily en 1d,   API 127.0.0.1:8081
 #   scripts\sim.ps1 -Bot dual      → DualMomentum en 1d, API 127.0.0.1:8082
-param([ValidateSet('breakout', 'daily', 'dual')][string]$Bot = 'breakout')
+#   scripts\sim.ps1 -Bot manual    → práctica manual 5m, API 127.0.0.1:8083
+param([ValidateSet('breakout', 'daily', 'dual', 'manual')][string]$Bot = 'breakout')
 
 $ErrorActionPreference = 'Stop'
 $root = Split-Path -Parent $PSScriptRoot
@@ -13,6 +14,7 @@ $bots = @{
     breakout = @{ Strategy = 'BreakoutTrend'; Config = 'config.sim.json'; Name = 'sim'; Telegram = $true }
     daily    = @{ Strategy = 'TrendDaily'; Config = 'config.sim.daily.json'; Name = 'sim-daily'; Telegram = $false }
     dual     = @{ Strategy = 'DualMomentum'; Config = 'config.sim.dual.json'; Name = 'sim-dual'; Telegram = $false }
+    manual   = @{ Strategy = 'ManualPractice'; Config = 'config.sim.manual.json'; Name = 'sim-manual'; Telegram = $false }
 }
 $b = $bots[$Bot]
 

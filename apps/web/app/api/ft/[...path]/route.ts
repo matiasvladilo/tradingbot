@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { ACTION_PATHS, READ_PATHS, ftFetch, isBot } from "@/lib/ft-server";
+import { ACTION_PATHS, MANUAL_BOT, READ_PATHS, ftFetch, isBot } from "@/lib/ft-server";
 
 // Rutas: /api/ft/<bot>/<ruta de Freqtrade>
 type Ctx = { params: Promise<{ path: string[] }> };
@@ -30,7 +30,8 @@ export async function GET(req: NextRequest, ctx: Ctx) {
 
 export async function POST(req: NextRequest, ctx: Ctx) {
   const { bot, path } = await resolve(ctx);
-  if (!isBot(bot) || !ACTION_PATHS.has(path)) return NextResponse.json({ error: "acción no permitida" }, { status: 404 });
+  if (!isBot(bot) || !ACTION_PATHS.has(path) || (path === "forceenter" && bot !== MANUAL_BOT))
+    return NextResponse.json({ error: "acción no permitida" }, { status: 404 });
   const body = await req.text();
   return proxy(req, bot, path, { method: "POST", body: body || undefined });
 }

@@ -118,6 +118,19 @@ button, select {
 button:hover { border-color: var(--accent); }
 button:disabled { opacity: 0.5; cursor: not-allowed; }
 button.danger { border-color: var(--neg); color: var(--neg); }
+button.active-btn { border-color: var(--accent); background: #1f3a5f; }
+
+.input {
+  width: 100%;
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px 10px;
+  font: inherit;
+  margin-bottom: 10px;
+}
+textarea.input { resize: vertical; }
 
 .error { color: var(--neg); font-size: 13px; }
 .note { color: var(--muted); font-size: 12px; line-height: 1.5; }
