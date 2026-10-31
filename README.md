@@ -34,3 +34,10 @@ Actualizar datos: `freqtrade download-data --userdir freqtrade/user_data --confi
 - `apps/web/` · dashboard Next.js; las credenciales de la API viven solo en `apps/web/.env.local`
 - `docs/decisions/` · decisiones y su motivo
 - `docker-compose.yml` · mismo stack con Postgres, para cuando WSL2 esté instalado
+
+## Robustez (Monte Carlo)
+
+```powershell
+.\.venv\Scripts\python scripts\monte_carlo.py <backtest-result-...zip> TrendDaily [<zip> <estrategia> ...]
+```
+Actualiza la página Robustez del dashboard.

@@ -7,6 +7,7 @@ const LINKS = [
   { href: "/", label: "Resumen" },
   { href: "/grafico", label: "Gráfico" },
   { href: "/simulacion", label: "Simulación" },
+  { href: "/robustez", label: "Robustez" },
   { href: "/historial", label: "Historial" },
   { href: "/controles", label: "Controles" },
 ];
