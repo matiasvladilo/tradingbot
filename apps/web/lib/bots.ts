@@ -29,6 +29,24 @@ export const BOTS: Bot[] = [
     ],
   },
   {
+    id: "dual",
+    label: "DualMomentum · 1d",
+    strategy: "DualMomentum",
+    timeframe: "1d",
+    barSeconds: 86_400,
+    candleLimit: 500,
+    factors:
+      "Factores: retorno de 30 días del par y del otro par (mom / other_mom). Mantiene el más fuerte solo si su retorno es positivo; stop 3×ATR(20).",
+    limits: [
+      ["Riesgo por operación", "0,25% del patrimonio hasta el stop"],
+      ["Máximo por activo", "20% del patrimonio"],
+      ["Exposición total", "40% (2 posiciones × 20%)"],
+      ["Stop", "3×ATR(20) fijo desde la entrada"],
+      ["Salida", "retorno 30 d ≤ 0 o el otro par lo supera"],
+      ["CooldownPeriod", "1 día tras cerrar una operación"],
+    ],
+  },
+  {
     id: "breakout",
     label: "BreakoutTrend v1 · 1h (descartada)",
     strategy: "BreakoutTrend",

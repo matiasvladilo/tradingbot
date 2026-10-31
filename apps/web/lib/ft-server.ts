@@ -5,6 +5,7 @@ import "server-only";
 const BOT_URLS: Record<string, string> = {
   breakout: process.env.FT_API_URL ?? "http://127.0.0.1:8080",
   daily: process.env.FT_API_URL_DAILY ?? "http://127.0.0.1:8081",
+  dual: process.env.FT_API_URL_DUAL ?? "http://127.0.0.1:8082",
 };
 
 export const isBot = (id: string) => id in BOT_URLS;

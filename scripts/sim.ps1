@@ -2,7 +2,8 @@
 # Lee credenciales de API/Telegram desde .env y las pasa como variables FREQTRADE__*.
 #   scripts\sim.ps1                → BreakoutTrend en 1h, API 127.0.0.1:8080
 #   scripts\sim.ps1 -Bot daily     → TrendDaily en 1d,   API 127.0.0.1:8081
-param([ValidateSet('breakout', 'daily')][string]$Bot = 'breakout')
+#   scripts\sim.ps1 -Bot dual      → DualMomentum en 1d, API 127.0.0.1:8082
+param([ValidateSet('breakout', 'daily', 'dual')][string]$Bot = 'breakout')
 
 $ErrorActionPreference = 'Stop'
 $root = Split-Path -Parent $PSScriptRoot
@@ -11,6 +12,7 @@ Set-Location $root
 $bots = @{
     breakout = @{ Strategy = 'BreakoutTrend'; Config = 'config.sim.json'; Name = 'sim'; Telegram = $true }
     daily    = @{ Strategy = 'TrendDaily'; Config = 'config.sim.daily.json'; Name = 'sim-daily'; Telegram = $false }
+    dual     = @{ Strategy = 'DualMomentum'; Config = 'config.sim.dual.json'; Name = 'sim-dual'; Telegram = $false }
 }
 $b = $bots[$Bot]
 
